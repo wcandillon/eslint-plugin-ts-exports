@@ -1,6 +1,6 @@
 {
-  "name": "eslint-plugin-reanimated",
-  "version": "1.1.4",
+  "name": "eslint-plugin-ts-exports",
+  "version": "0.0.0-development",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
@@ -40,6 +40,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wcandillon/eslint-plugin-reanimated.git"
+    "url": "https://github.com/wcandillon/eslint-plugin-ts-exports.git"
   }
 }

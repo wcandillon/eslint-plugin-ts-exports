@@ -13,16 +13,16 @@ import {
   isModuleBlock,
   isSourceFile,
 } from "typescript";
-import analyzeTsConfig from "ts-unused-exports";
+import analyzeTsConfig, { ExportNameAndLocation } from "ts-unused-exports";
 
 export type Options = [];
-export type MessageIds = "UnusedExports";
+export type MessageIds = "UnusedExportsMessage";
 
 const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/wcandillon/eslint-plugin-ts-exports/blob/master/docs/${name}.md`;
 });
 
-const JSFunctionInWorkletMessage = "{{name}} is unused";
+const UnusedExportsMessage = "{{name}} is unused";
 
 export default createRule<Options, MessageIds>({
   name: "js-function-in-worklet",
@@ -37,9 +37,32 @@ export default createRule<Options, MessageIds>({
     fixable: "code",
     schema: [],
     messages: {
-      JSFunctionInWorkletMessage,
+      UnusedExportsMessage,
     },
   },
   defaultOptions: [],
-  create: (context) => {},
+  create: (context) => {
+    const parserServices = ESLintUtils.getParserServices(context);
+    const config = parserServices.program.getCompilerOptions()
+      .configFilePath as string;
+    // console.log({ result, context });
+    return {
+      Program: (node) => {
+        const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
+        const analysis = analyzeTsConfig(config, [tsNode.fileName]);
+        const files = Object.values(analysis);
+        files.forEach((file) => {
+          file.forEach(({ exportName }) => {
+            context.report({
+              messageId: "UnusedExportsMessage",
+              node,
+              data: {
+                name: exportName,
+              },
+            });
+          });
+        });
+      },
+    };
+  },
 });

@@ -22,10 +22,24 @@ const code = (name: string) =>
 const VALID = "fixtures/valid";
 const files = fs.readdirSync(path.join(__dirname, VALID));
 const valid = files.map((file) => ({
+  filename: path.join("valid", file),
   code: code(path.join(VALID, file)),
 }));
 
-ruleTester.run("js-function-in-worklet", rule, {
+ruleTester.run("unused-exports", rule, {
   valid,
-  invalid: [],
+  invalid: [
+    {
+      code: code("fixtures/invalid/test1.ts"),
+      filename: "invalid/test1.ts",
+      errors: [
+        {
+          messageId: "UnusedExportsMessage",
+          data: {
+            name: "foo",
+          },
+        },
+      ],
+    },
+  ],
 });
