@@ -37,20 +37,18 @@ export default createRule<Options, MessageIds>({
         const analysis = analyzeTsConfig(config, [tsNode.fileName]);
         const files = Object.values(analysis);
         files.forEach((file) => {
-          file.forEach(
-            ({ exportName, location: { line, character: column } }) => {
-              context.report({
-                messageId: "UnusedExportsMessage",
-                loc: {
-                  line,
-                  column,
-                },
-                data: {
-                  name: exportName,
-                },
-              });
-            }
-          );
+          file.forEach(({ exportName, location }) => {
+            const nodeOrLoc = location
+              ? { loc: { line: location.line, column: location.character } }
+              : { node };
+            context.report({
+              messageId: "UnusedExportsMessage",
+              ...nodeOrLoc,
+              data: {
+                name: exportName,
+              },
+            });
+          });
         });
       },
     };
