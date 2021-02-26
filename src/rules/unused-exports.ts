@@ -38,16 +38,15 @@ export default createRule<Options, MessageIds>({
         const files = Object.values(analysis);
         files.forEach((file) => {
           file.forEach(({ exportName, location }) => {
-            const nodeOrLoc = location
-              ? { loc: { line: location.line, column: location.character } }
-              : { node };
-            context.report({
-              messageId: "UnusedExportsMessage",
-              ...nodeOrLoc,
-              data: {
-                name: exportName,
-              },
-            });
+            if (location) {
+              context.report({
+                messageId: "UnusedExportsMessage",
+                loc: { line: location.line, column: location.character },
+                data: {
+                  name: exportName,
+                },
+              });
+            }
           });
         });
       },
