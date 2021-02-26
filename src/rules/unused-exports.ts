@@ -31,24 +31,23 @@ export default createRule<Options, MessageIds>({
     const parserServices = ESLintUtils.getParserServices(context);
     const config = parserServices.program.getCompilerOptions()
       .configFilePath as string;
+    const analysis = analyzeTsConfig(config);
     return {
       Program: (node) => {
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
-        const analysis = analyzeTsConfig(config, [tsNode.fileName]);
-        const files = Object.values(analysis);
-        files.forEach((file) => {
-          file.forEach(({ exportName, location }) => {
-            if (location) {
-              context.report({
-                messageId: "UnusedExportsMessage",
-                loc: { line: location.line, column: location.character },
-                data: {
-                  name: exportName,
-                },
-              });
-            }
+        const { fileName } = tsNode;
+        const errors = analysis[fileName];
+        if (errors) {
+          errors.forEach(({ exportName, location }) => {
+            context.report({
+              messageId: "UnusedExportsMessage",
+              loc: { line: location.line, column: location.character },
+              data: {
+                name: exportName,
+              },
+            });
           });
-        });
+        }
       },
     };
   },

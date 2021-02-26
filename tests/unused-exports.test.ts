@@ -19,15 +19,14 @@ const ruleTester = new ESLintUtils.RuleTester({
 
 const code = (name: string) =>
   fs.readFileSync(path.join(__dirname, name), "utf8");
-const VALID = "fixtures/valid";
-const files = fs.readdirSync(path.join(__dirname, VALID));
-const valid = files.map((file) => ({
-  filename: path.join("valid", file),
-  code: code(path.join(VALID, file)),
-}));
 
 ruleTester.run("unused-exports", rule, {
-  valid,
+  valid: [
+    {
+      code: code("fixtures/valid/test.ts"),
+      filename: "valid/test.ts",
+    },
+  ],
   invalid: [
     {
       code: code("fixtures/invalid/test1.ts"),
@@ -37,6 +36,12 @@ ruleTester.run("unused-exports", rule, {
           messageId: "UnusedExportsMessage",
           data: {
             name: "foo",
+          },
+        },
+        {
+          messageId: "UnusedExportsMessage",
+          data: {
+            name: "default",
           },
         },
       ],
