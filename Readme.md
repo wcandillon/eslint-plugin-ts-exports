@@ -1,4 +1,4 @@
-The goal of this plugin is to help you when writing animation worklets with Reanimated.
+ESLint wrapper for ts-unused-exports
 
 ## Installation
 
