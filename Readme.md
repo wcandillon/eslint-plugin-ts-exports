@@ -15,13 +15,12 @@ You need to set your `tsconfig.json` file in your eslint configuration via `pars
 
 ```json
 {
-  "extends": "react-native-wcandillon",
-  "plugins": ["reanimated"],
+  "plugins": ["ts-exports"],
   "parserOptions": {
     "project": "./tsconfig.json"
   },
   "rules": {
-    "reanimated/js-function-in-worklet": 2,
+    "ts-exports/unused-exports": 2,
   }
 }
 ```
