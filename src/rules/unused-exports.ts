@@ -14,12 +14,12 @@ const UnusedExportsMessage = "{{name}} is unused";
 let analysis: Analysis | null = null;
 
 export default createRule<Options, MessageIds>({
-  name: "js-function-in-worklet",
+  name: "unused-exports",
   meta: {
     type: "problem",
     docs: {
       description:
-        "non-worklet functions should be invoked via runOnJS. Use runOnJS() or workletlize instead.",
+        "Detects unused exports in TypeScript",
       category: "Possible Errors",
       recommended: "error",
     },
