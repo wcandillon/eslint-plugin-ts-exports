@@ -18,8 +18,7 @@ export default createRule<Options, MessageIds>({
   meta: {
     type: "problem",
     docs: {
-      description:
-        "Detects unused exports in TypeScript",
+      description: "Detects unused exports in TypeScript",
       category: "Possible Errors",
       recommended: "error",
     },
