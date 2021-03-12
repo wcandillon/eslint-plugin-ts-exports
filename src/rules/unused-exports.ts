@@ -1,15 +1,34 @@
+import path from "path";
+
 import { ESLintUtils } from "@typescript-eslint/experimental-utils";
-import analyzeTsConfig from "ts-unused-exports";
-import { Analysis } from "ts-unused-exports/lib/types";
+import { run } from "ts-prune/lib/runner";
 
 export type Options = [];
 export type MessageIds = "UnusedExportsMessage";
+
+type ResultSymbol = {
+  name: string;
+  start: {
+    line: number;
+    column: number;
+  };
+  end: {
+    line: number;
+    column: number;
+  };
+  usedInModule: boolean;
+};
+
+interface Analysis {
+  [file: string]: ResultSymbol[];
+}
 
 const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/wcandillon/eslint-plugin-ts-exports/blob/master/docs/${name}.md`;
 });
 
-const UnusedExportsMessage = "{{name}} is unused";
+const UnusedExportsMessage = "export {{name}} is unused";
+const isMacOS = process.platform === "darwin";
 
 let analysis: Analysis | null = null;
 
@@ -34,7 +53,24 @@ export default createRule<Options, MessageIds>({
     const config = parserServices.program.getCompilerOptions()
       .configFilePath as string;
     if (!analysis) {
-      analysis = analyzeTsConfig(config);
+      analysis = {};
+      run(
+        {
+          project: config.substring(process.cwd().length),
+          format: false,
+        },
+        (result: { file: string; symbol: ResultSymbol }) => {
+          const nonNormalizedFile = path.join(process.cwd(), result.file);
+          const file = isMacOS
+            ? nonNormalizedFile.toLowerCase()
+            : nonNormalizedFile;
+          if (analysis !== null && analysis[file] === undefined) {
+            analysis[file] = [result.symbol];
+          } else if (analysis !== null) {
+            (analysis[file] as ResultSymbol[]).push(result.symbol);
+          }
+        }
+      );
     }
     return {
       Program: (node) => {
@@ -45,15 +81,15 @@ export default createRule<Options, MessageIds>({
         }
         const errors = analysis[fileName];
         if (errors) {
-          errors.forEach(({ exportName, location }) => {
-            const nodeOrLoc = location
-              ? { loc: { line: location.line, column: location.character } }
-              : node;
+          errors.forEach(({ name, start, end }) => {
             context.report({
               messageId: "UnusedExportsMessage",
-              ...nodeOrLoc,
+              loc: {
+                start,
+                end,
+              },
               data: {
-                name: exportName,
+                name,
               },
             });
           });
