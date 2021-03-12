@@ -1,4 +1,4 @@
-ESLint wrapper for ts-unused-exports
+ESLint wrapper for ts-prune
 
 ## Installation
 
