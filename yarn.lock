@@ -7590,9 +7590,9 @@ ts-morph@^7.3.0:
     "@ts-morph/common" "~0.5.2"
     code-block-writer "^10.1.0"
 
-"ts-prune@https://firebasestorage.googleapis.com/v0/b/start-react-native.appspot.com/o/ts-prune-v0.0.0-development.tgz?alt=media&token=2dd42c55-222d-47c6-ab2a-e4dec91c10ec":
-  version "0.0.0-development"
-  resolved "https://firebasestorage.googleapis.com/v0/b/start-react-native.appspot.com/o/ts-prune-v0.0.0-development.tgz?alt=media&token=2dd42c55-222d-47c6-ab2a-e4dec91c10ec#9d818fac369587fcfd4425a7dfbb169c0a325b19"
+"ts-prune@https://firebasestorage.googleapis.com/v0/b/start-react-native.appspot.com/o/ts-prune-v0.0.3-wcandillon.tgz?alt=media&token=f5c337f6-c8bb-41dd-a958-cb9c52e2f6d1":
+  version "0.0.3-wcandillon"
+  resolved "https://firebasestorage.googleapis.com/v0/b/start-react-native.appspot.com/o/ts-prune-v0.0.3-wcandillon.tgz?alt=media&token=f5c337f6-c8bb-41dd-a958-cb9c52e2f6d1#73766cda09dd5cea894160d13f88d66fb724907e"
   dependencies:
     commander "^6.2.1"
     cosmiconfig "^7.0.0"
