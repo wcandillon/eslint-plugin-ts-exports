@@ -3,7 +3,13 @@ import path from "path";
 import { ESLintUtils } from "@typescript-eslint/experimental-utils";
 import { run } from "ts-prune/lib/runner";
 
-export type Options = [];
+export type Options = [
+  {
+    ignoreUsedInModule?: boolean;
+    ignoreTests?: boolean;
+    ignoreIndex?: boolean;
+  }
+];
 export type MessageIds = "UnusedExportsMessage";
 
 type ResultSymbol = {
@@ -42,13 +48,38 @@ export default createRule<Options, MessageIds>({
       recommended: "error",
     },
     fixable: "code",
-    schema: [],
+    schema: [
+      {
+        type: "object",
+        properties: {
+          ignoreUsedInModule: {
+            type: "boolean",
+          },
+          ignoreTests: {
+            type: "boolean",
+          },
+          ignoreIndex: {
+            type: "boolean",
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
     messages: {
       UnusedExportsMessage,
     },
   },
-  defaultOptions: [],
+  defaultOptions: [
+    { ignoreTests: false, ignoreIndex: true, ignoreUsedInModule: false },
+  ],
   create: (context) => {
+    console.log({ context });
+    const { ignoreUsedInModule, ignoreTests, ignoreIndex } = {
+      ignoreTests: false,
+      ignoreIndex: true,
+      ignoreUsedInModule: false,
+      ...context.options,
+    };
     const parserServices = ESLintUtils.getParserServices(context);
     const config = parserServices.program.getCompilerOptions()
       .configFilePath as string;
@@ -60,6 +91,15 @@ export default createRule<Options, MessageIds>({
           format: false,
         },
         (result: { file: string; symbol: ResultSymbol }) => {
+          if (ignoreIndex && result.file.match("/index\\.ts$")) {
+            return;
+          }
+          if (ignoreTests && result.file.match("(spec|test|Test)")) {
+            return;
+          }
+          if (ignoreUsedInModule && result.symbol.usedInModule) {
+            return;
+          }
           const nonNormalizedFile = path.join(process.cwd(), result.file);
           const file = isMacOS
             ? nonNormalizedFile.toLowerCase()
