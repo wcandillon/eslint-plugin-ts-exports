@@ -73,7 +73,6 @@ export default createRule<Options, MessageIds>({
     { ignoreTests: false, ignoreIndex: true, ignoreUsedInModule: false },
   ],
   create: (context) => {
-    console.log({ context });
     const { ignoreUsedInModule, ignoreTests, ignoreIndex } = {
       ignoreTests: false,
       ignoreIndex: true,
