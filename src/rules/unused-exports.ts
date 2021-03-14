@@ -124,8 +124,14 @@ export default createRule<Options, MessageIds>({
             context.report({
               messageId: "UnusedExportsMessage",
               loc: {
-                start,
-                end,
+                start: {
+                  line: start.line,
+                  column: start.column - 1,
+                },
+                end: {
+                  line: end.line,
+                  column: end.column - 1,
+                },
               },
               data: {
                 name,
