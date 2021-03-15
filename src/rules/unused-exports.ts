@@ -8,6 +8,7 @@ export type Options = [
     ignoreUsedInModule?: boolean;
     ignoreTests?: boolean;
     ignoreIndex?: boolean;
+    ignoreFiles?: string;
   }
 ];
 export type MessageIds = "UnusedExportsMessage";
@@ -62,6 +63,9 @@ export default createRule<Options, MessageIds>({
           ignoreIndex: {
             type: "boolean",
           },
+          ignoreFiles: {
+            type: "string",
+          },
         },
         additionalProperties: false,
       },
@@ -74,11 +78,11 @@ export default createRule<Options, MessageIds>({
     { ignoreTests: false, ignoreIndex: true, ignoreUsedInModule: false },
   ],
   create: (context) => {
-    const { ignoreUsedInModule, ignoreTests, ignoreIndex } = {
+    const { ignoreUsedInModule, ignoreTests, ignoreIndex, ignoreFiles } = {
       ignoreTests: false,
       ignoreIndex: true,
       ignoreUsedInModule: false,
-      ...context.options,
+      ...context.options[0],
     };
     const parserServices = ESLintUtils.getParserServices(context);
     const config = parserServices.program.getCompilerOptions()
@@ -91,13 +95,16 @@ export default createRule<Options, MessageIds>({
           format: false,
         },
         (result: { file: string; symbol: ResultSymbol }) => {
-          if (ignoreIndex && result.file.match("/index\\.ts$")) {
+          if (ignoreIndex && result.file.match("/index\\.(ts|tsx)$")) {
             return;
           }
           if (ignoreTests && result.file.match("(spec|test|Test)")) {
             return;
           }
           if (ignoreUsedInModule && result.symbol.usedInModule) {
+            return;
+          }
+          if (ignoreFiles && result.file.match(ignoreFiles)) {
             return;
           }
           const nonNormalizedFile = path.join(process.cwd(), result.file);
