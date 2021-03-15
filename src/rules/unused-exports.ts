@@ -34,8 +34,8 @@ const createRule = ESLintUtils.RuleCreator((name) => {
 });
 
 const UnusedExportsMessage = "export {{name}} is unused";
-const isMacOS = process.platform === "darwin";
-const normalizePath = (path: string) => (isMacOS ? path.toLowerCase() : path);
+const normalizePath = (filePath: string) =>
+  process.platform === "darwin" ? filePath.toLowerCase() : filePath;
 
 let analysis: Analysis | null = null;
 
