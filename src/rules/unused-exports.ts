@@ -34,7 +34,8 @@ const createRule = ESLintUtils.RuleCreator((name) => {
 });
 
 const UnusedExportsMessage = "export {{name}} is unused";
-const isMacOS = process.platform === "darwin";
+const normalizePath = (filePath: string) =>
+  process.platform === "darwin" ? filePath.toLowerCase() : filePath;
 
 let analysis: Analysis | null = null;
 
@@ -100,9 +101,7 @@ export default createRule<Options, MessageIds>({
             return;
           }
           const nonNormalizedFile = path.join(process.cwd(), result.file);
-          const file = isMacOS
-            ? nonNormalizedFile.toLowerCase()
-            : nonNormalizedFile;
+          const file = normalizePath(nonNormalizedFile);
           if (analysis !== null && analysis[file] === undefined) {
             analysis[file] = [result.symbol];
           } else if (analysis !== null) {
@@ -118,7 +117,7 @@ export default createRule<Options, MessageIds>({
         if (!analysis) {
           return;
         }
-        const errors = analysis[fileName];
+        const errors = analysis[normalizePath(fileName)];
         if (errors) {
           errors.forEach(({ name, start, end }) => {
             context.report({
