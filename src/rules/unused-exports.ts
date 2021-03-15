@@ -1,7 +1,7 @@
 import path from "path";
 
 import { ESLintUtils } from "@typescript-eslint/experimental-utils";
-import { run } from "ts-prune/lib/runner";
+import { analyze } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 
 export type Options = [
   {
@@ -83,6 +83,8 @@ export default createRule<Options, MessageIds>({
     const config = parserServices.program.getCompilerOptions()
       .configFilePath as string;
     if (!analysis) {
+      const parserServices = ESLintUtils.getParserServices(context);
+      analyze(parserServices.program);
       analysis = {};
       run(
         {

@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@typescript-eslint/experimental-utils": "^4.12.0",
-    "ts-prune": "https://firebasestorage.googleapis.com/v0/b/start-react-native.appspot.com/o/ts-prune-v0.0.3-wcandillon.tgz?alt=media&token=f5c337f6-c8bb-41dd-a958-cb9c52e2f6d1",
+    "ts-morph": "^10.0.1",
     "typescript": "^4.1.3"
   },
   "repository": {
