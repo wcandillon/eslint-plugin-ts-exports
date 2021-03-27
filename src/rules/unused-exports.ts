@@ -38,8 +38,6 @@ const UnusedExportsMessage = "export {{name}} is unused";
 const normalizePath = (filePath: string) =>
   process.platform === "darwin" ? filePath.toLowerCase() : filePath;
 
-let analysis: Analysis | null = null;
-
 export default createRule<Options, MessageIds>({
   name: "unused-exports",
   meta: {
@@ -87,36 +85,34 @@ export default createRule<Options, MessageIds>({
     const parserServices = ESLintUtils.getParserServices(context);
     const config = parserServices.program.getCompilerOptions()
       .configFilePath as string;
-    if (!analysis) {
-      analysis = {};
-      run(
-        {
-          project: config.substring(process.cwd().length),
-          format: false,
-        },
-        (result: { file: string; symbol: ResultSymbol }) => {
-          if (ignoreIndex && result.file.match("/index\\.(ts|tsx)$")) {
-            return;
-          }
-          if (ignoreTests && result.file.match("(spec|test|Test)")) {
-            return;
-          }
-          if (ignoreUsedInModule && result.symbol.usedInModule) {
-            return;
-          }
-          if (ignoreFiles && result.file.match(ignoreFiles)) {
-            return;
-          }
-          const nonNormalizedFile = path.join(process.cwd(), result.file);
-          const file = normalizePath(nonNormalizedFile);
-          if (analysis !== null && analysis[file] === undefined) {
-            analysis[file] = [result.symbol];
-          } else if (analysis !== null) {
-            (analysis[file] as ResultSymbol[]).push(result.symbol);
-          }
+    const analysis: Analysis = {};
+    run(
+      {
+        project: config.substring(process.cwd().length),
+        format: false,
+      },
+      (result: { file: string; symbol: ResultSymbol }) => {
+        if (ignoreIndex && result.file.match("/index\\.(ts|tsx)$")) {
+          return;
         }
-      );
-    }
+        if (ignoreTests && result.file.match("(spec|test|Test)")) {
+          return;
+        }
+        if (ignoreUsedInModule && result.symbol.usedInModule) {
+          return;
+        }
+        if (ignoreFiles && result.file.match(ignoreFiles)) {
+          return;
+        }
+        const nonNormalizedFile = path.join(process.cwd(), result.file);
+        const file = normalizePath(nonNormalizedFile);
+        if (analysis !== null && analysis[file] === undefined) {
+          analysis[file] = [result.symbol];
+        } else if (analysis !== null) {
+          (analysis[file] as ResultSymbol[]).push(result.symbol);
+        }
+      }
+    );
     return {
       Program: (node) => {
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
