@@ -1,3 +1,6 @@
+# 🚨 Currently a draft 🚨
+This plugin is not in a usable state at the moment. We are trying to figure out a way to maintain a clean dependency tree without using too much resources.
+
 ESLint wrapper for ts-prune
 
 ## Installation
