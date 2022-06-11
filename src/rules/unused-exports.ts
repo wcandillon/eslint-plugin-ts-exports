@@ -141,8 +141,6 @@ export default createRule<Options, MessageIds>({
         if (!analysis) {
           return;
         }
-
-
         const errors = analysis[normalizePath(fileName)];
         if (errors) {
           errors.forEach(({ name, start }) => {
