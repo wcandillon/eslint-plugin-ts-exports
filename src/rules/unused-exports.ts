@@ -141,7 +141,6 @@ export default createRule<Options, MessageIds>({
         if (!analysis) {
           return;
         }
-console.log('test', tsNode.getText())
 
 
         const errors = analysis[normalizePath(fileName)];
