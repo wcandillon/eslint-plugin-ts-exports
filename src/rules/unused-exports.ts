@@ -136,7 +136,6 @@ export default createRule<Options, MessageIds>({
     return {
       Program: (node) => {
         const tsNode = parserServices.esTreeNodeToTSNodeMap.get(node);
-
         const { fileName } = tsNode;
         if (!analysis) {
           return;
