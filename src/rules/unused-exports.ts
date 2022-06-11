@@ -38,6 +38,12 @@ const UnusedExportsMessage = "export {{name}} is unused";
 const normalizePath = (filePath: string) =>
   process.platform === "darwin" ? filePath.toLowerCase() : filePath;
 
+const parseSymbolName = (result: string) =>
+  result.split(" - ")[1]?.split(" ")[0] as string;
+
+const parseSymbolLineNumber = (result: string) =>
+  parseInt(result.split(":")[1]?.split(" - ")[0] as string);
+
 export default createRule<Options, MessageIds>({
   name: "unused-exports",
   meta: {
@@ -89,9 +95,23 @@ export default createRule<Options, MessageIds>({
     run(
       {
         project: config.substring(process.cwd().length),
-        format: false,
       },
-      (result: { file: string; symbol: ResultSymbol }) => {
+      (resultString: string) => {
+        const filePath = resultString.split(":")[0] as string;
+        const startLine = parseSymbolLineNumber(resultString);
+
+        const symbol: ResultSymbol = {
+          usedInModule: resultString.includes("used in module"),
+          name: parseSymbolName(resultString),
+          start: { line: startLine, column: 0 },
+          end: { line: 0, column: 0 },
+        };
+
+        const result = {
+          file: filePath,
+          symbol,
+        };
+
         if (ignoreIndex && result.file.match("/index\\.(ts|tsx)$")) {
           return;
         }
@@ -122,13 +142,14 @@ export default createRule<Options, MessageIds>({
         }
         const errors = analysis[normalizePath(fileName)];
         if (errors) {
-          errors.forEach(({ name, start, end }) => {
+          errors.forEach(({ name, start }) => {
+            const { end, start: nodeStart } = node.loc;
             context.report({
               messageId: "UnusedExportsMessage",
               loc: {
                 start: {
                   line: start.line,
-                  column: start.column - 1,
+                  column: nodeStart.column - 1,
                 },
                 end: {
                   line: end.line,
